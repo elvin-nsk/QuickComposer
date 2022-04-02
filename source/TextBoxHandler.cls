@@ -33,22 +33,22 @@ Attribute Encapsulated.VB_VarHelpID = -1
 '===============================================================================
 
 Public Function Create( _
-                                    ByVal TextBox As MSForms.TextBox, _
-                                    ByVal TextBoxType As enumTextBoxType, _
-                                    Optional ByVal Min As Variant = 0, _
-                                    Optional ByVal Max As Variant = 2147483647 _
-                                ) As TextBoxHandler
+                    ByVal TextBox As MSForms.TextBox, _
+                    ByVal TextBoxType As enumTextBoxType, _
+                    Optional ByVal Min As Variant = 0, _
+                    Optional ByVal Max As Variant = 2147483647 _
+                ) As TextBoxHandler
     With New TextBoxHandler
         Set Create = .Init(TextBox, TextBoxType, Min, Max)
     End With
 End Function
 
 Friend Function Init( _
-                                    ByVal TextBox As MSForms.TextBox, _
-                                    ByVal TextBoxType As enumTextBoxType, _
-                                    ByVal Min As Variant, _
-                                    ByVal Max As Variant _
-                                ) As TextBoxHandler
+                    ByVal TextBox As MSForms.TextBox, _
+                    ByVal TextBoxType As enumTextBoxType, _
+                    ByVal Min As Variant, _
+                    ByVal Max As Variant _
+                ) As TextBoxHandler
     With This
         .TextBoxType = TextBoxType
         .Min = Min
@@ -98,8 +98,10 @@ Private Sub Encapsulated_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
     End Select
 End Sub
 
-Private Sub Encapsulated_KeyUp _
-                        (ByVal KeyCode As MSForms.ReturnInteger, ByVal Shift As Integer)
+Private Sub Encapsulated_KeyUp( _
+                ByVal KeyCode As MSForms.ReturnInteger, _
+                ByVal Shift As Integer _
+            )
     Select Case This.TextBoxType
         Case TextBoxTypeLong
             GuardRangeLng This.Min, This.Max
@@ -117,8 +119,10 @@ Private Sub GuardFloat(ByVal KeyAscii As MSForms.ReturnInteger)
     GuardNumeric KeyAscii, True
 End Sub
 
-Private Sub GuardNumeric(ByVal KeyAscii As MSForms.ReturnInteger, _
-                                                 ByVal AllowFloat As Boolean)
+Private Sub GuardNumeric( _
+                ByVal KeyAscii As MSForms.ReturnInteger, _
+                ByVal AllowFloat As Boolean _
+            )
     Select Case KeyAscii.Value
         Case VBA.Asc("0") To VBA.Asc("9")
         Case VBA.Asc(","), VBA.Asc(".")
@@ -141,8 +145,10 @@ Private Sub GuardNumeric(ByVal KeyAscii As MSForms.ReturnInteger, _
     End Select
 End Sub
 
-Private Sub GuardRangeDbl(ByVal Min As Double, _
-                                                    Optional ByVal Max As Double = 1.79769313486231E+308)
+Private Sub GuardRangeDbl( _
+                ByVal Min As Double, _
+                Optional ByVal Max As Double = 1.79769313486231E+308 _
+            )
     With Encapsulated
         If .Value = "" Or .Value = "-" Then Exit Sub
         If VBA.CDbl(.Value) > Max Then .Value = VBA.CStr(Max)
@@ -150,8 +156,10 @@ Private Sub GuardRangeDbl(ByVal Min As Double, _
     End With
 End Sub
 
-Private Sub GuardRangeLng(ByVal Min As Long, _
-                                                    Optional ByVal Max As Long = 2147483647)
+Private Sub GuardRangeLng( _
+                ByVal Min As Long, _
+                Optional ByVal Max As Long = 2147483647 _
+            )
     With Encapsulated
         If .Value = "" Or .Value = "-" Then Exit Sub
         If VBA.CLng(.Value) > Max Then .Value = VBA.CStr(Max)

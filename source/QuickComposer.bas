@@ -1,10 +1,10 @@
 Attribute VB_Name = "QuickComposer"
 '===============================================================================
-' Макрос                     : QuickComposer
-' Версия                     : 2022.02.21
-' Сайты                        : https://vk.com/elvin_macro/QuickComposer
-'                                        https://github.com/elvin-nsk
-' Автор                        : elvin-nsk (me@elvin.nsk.ru)
+'   Макрос          : QuickComposer
+'   Версия          : 2022.04.02
+'   Сайты           : https://vk.com/elvin_macro/QuickComposer
+'                     https://github.com/elvin-nsk
+'   Автор           : elvin-nsk (me@elvin.nsk.ru)
 '===============================================================================
 
 Option Explicit
@@ -21,12 +21,16 @@ Private Const CompositionsDocumentName As String = "Compositions"
 
 '===============================================================================
 
+Public LocalizedStrings As IStringLocalizer
+
 Sub Start()
 
     If RELEASE Then On Error GoTo Catch
     
+    LocalizedStringsInit
+    
     If ActiveDocument Is Nothing Then
-        VBA.MsgBox "Нет активного документа"
+        VBA.MsgBox LocalizedStrings("Common.ErrNoDocument")
         Exit Sub
     End If
     
@@ -41,7 +45,7 @@ Sub Start()
         ActiveDocument.Name = CompositionsDocumentName
     End If
     
-    lib_elvin.BoostStart "QuickComposer", RELEASE
+    lib_elvin.BoostStart APP_NAME, RELEASE
     Compose ActivePage.Shapes.All, ActivePage, ActiveDocument, Cfg
     ActiveDocument.Pages.First.Activate
     
@@ -50,7 +54,7 @@ Finally:
     Exit Sub
 
 Catch:
-    VBA.MsgBox VBA.Err.Description, vbCritical, "Ошибка"
+    VBA.MsgBox VBA.Err.Description, vbCritical, "Error"
     Resume Finally
 
 End Sub
@@ -95,10 +99,12 @@ Private Function GetViewResult(ByVal Cfg As Config) As Boolean
     End With
 End Function
 
-Private Function Compose(ByVal Shapes As ShapeRange, _
-                                                 ByVal Page As Page, _
-                                                 ByVal Doc As Document, _
-                                                 ByVal Cfg As Config)
+Private Function Compose( _
+                     ByVal Shapes As ShapeRange, _
+                     ByVal Page As Page, _
+                     ByVal Doc As Document, _
+                     ByVal Cfg As Config _
+                 )
     
     Dim MaxPlacesInWidth As Long
     Dim MaxPlacesInHeight As Long
@@ -131,15 +137,15 @@ Private Function Compose(ByVal Shapes As ShapeRange, _
     
     Do
         With Composer.CreateAndCompose( _
-                                        Elements:=Elements, _
-                                        StartingPoint:=FreePoint.Create(-20000, 20000), _
-                                        MaxPlacesInWidth:=MaxPlacesInWidth, _
-                                        MaxPlacesInHeight:=MaxPlacesInHeight, _
-                                        MaxWidth:=MaxWidth, _
-                                        MaxHeight:=MaxHeight, _
-                                        HorizontalSpace:=Cfg.HorizontalSpace, _
-                                        VerticalSpace:=Cfg.VerticalSpace _
-                                    )
+                          Elements:=Elements, _
+                          StartingPoint:=FreePoint.Create(-20000, 20000), _
+                          MaxPlacesInWidth:=MaxPlacesInWidth, _
+                          MaxPlacesInHeight:=MaxPlacesInHeight, _
+                          MaxWidth:=MaxWidth, _
+                          MaxHeight:=MaxHeight, _
+                          HorizontalSpace:=Cfg.HorizontalSpace, _
+                          VerticalSpace:=Cfg.VerticalSpace _
+                      )
             ComposedShapesAsElements.Add _
                 ComposerElement.Create(ElementsToShapes(.ComposedElements))
             Set Elements = .RemainingElements
@@ -150,46 +156,72 @@ Private Function Compose(ByVal Shapes As ShapeRange, _
 
 End Function
 
-Private Function DistributeCompositions _
-                                    (ByVal Elements As Collection, _
-                                     ByVal Doc As Document, _
-                                     ByVal Cfg As Config)
-    Dim i As Long
+Private Sub DistributeCompositions( _
+                ByVal Elements As Collection, _
+                ByVal Doc As Document, _
+                ByVal Cfg As Config _
+            )
+    
+    If Cfg.OptionOnePage Then
+        DistributeByOnePage Elements, Doc, Cfg
+    ElseIf Cfg.OptionMultiplePages Then
+        DistributeByMultiplePages Elements, Doc, Cfg
+    End If
+End Sub
+
+Private Sub DistributeByOnePage( _
+                ByVal Elements As Collection, _
+                ByVal Doc As Document, _
+                ByVal Cfg As Config _
+            )
+            
+    Dim Index As Long
     Dim Count As Long
     Dim Space As Double
     Dim Shapes As ShapeRange
-    If Cfg.OptionMultiplePages Then
-        If Elements.Count > 1 Then Doc.AddPages Elements.Count - 1
-        For i = 1 To Elements.Count
-            If i > 1 Then _
-                lib_elvin.MoveToLayer Elements(i).Shapes, Doc.Pages(i).ActiveLayer
-            Elements(i).Shapes.CenterX = Doc.Pages(i).CenterX
-            Elements(i).Shapes.CenterY = Doc.Pages(i).CenterY
-            If Cfg.OptionGroup Then
-                Doc.Pages(i).Activate
-                Elements(i).Shapes.Group
-            End If
-        Next i
-    ElseIf Cfg.OptionOnePage Then
-        Count = VBA.Fix(VBA.Sqr(Elements.Count)) + 1
-        Space = lib_elvin.AverageDim(Elements(1).Shapes) / _
-                        SpaceBetweenCompositionsDivider
-        With Composer.CreateAndCompose( _
-                                        Elements:=Elements, _
-                                        StartingPoint:=FreePoint.Create(-20000, 20000), _
-                                        MaxPlacesInWidth:=Count, _
-                                        MaxPlacesInHeight:=Count, _
-                                        HorizontalSpace:=Space, _
-                                        VerticalSpace:=Space _
-                                    )
-            With ElementsToShapes(.ComposedElements)
-                .CenterX = Doc.ActivePage.CenterX
-                .CenterY = Doc.ActivePage.CenterY
-            End With
-            If Cfg.OptionGroup Then GroupElementsShapes Elements
+    
+    Count = VBA.Fix(VBA.Sqr(Elements.Count)) + 1
+    Space = lib_elvin.AverageDim(Elements(1).Shapes) / _
+                    SpaceBetweenCompositionsDivider
+    With Composer.CreateAndCompose( _
+                      Elements:=Elements, _
+                      StartingPoint:=FreePoint.Create(-20000, 20000), _
+                      MaxPlacesInWidth:=Count, _
+                      MaxPlacesInHeight:=Count, _
+                      HorizontalSpace:=Space, _
+                      VerticalSpace:=Space _
+                  )
+        With ElementsToShapes(.ComposedElements)
+            .CenterX = Doc.ActivePage.CenterX
+            .CenterY = Doc.ActivePage.CenterY
         End With
-    End If
-End Function
+        If Cfg.OptionGroup Then GroupElementsShapes Elements
+    End With
+    
+End Sub
+
+Private Sub DistributeByMultiplePages( _
+                ByVal Elements As Collection, _
+                ByVal Doc As Document, _
+                ByVal Cfg As Config _
+            )
+            
+    Dim Index As Long
+    Dim Count As Long
+    Dim Shapes As ShapeRange
+
+    If Elements.Count > 1 Then Doc.AddPages Elements.Count - 1
+    For Index = 1 To Elements.Count
+        lib_elvin.MoveToLayer Elements(Index).Shapes, Doc.Pages(Index).ActiveLayer
+        Elements(Index).Shapes.CenterX = Doc.Pages(Index).CenterX
+        Elements(Index).Shapes.CenterY = Doc.Pages(Index).CenterY
+        If Cfg.OptionGroup Then
+            Doc.Pages(Index).Activate
+            Elements(Index).Shapes.Group
+        End If
+    Next Index
+    
+End Sub
 
 Private Sub GroupElementsShapes(ByVal Elements As Collection)
     Dim Element As ComposerElement
@@ -206,14 +238,24 @@ Private Function ShapesToElements(ByVal Shapes As ShapeRange) As Collection
     Next Shape
 End Function
 
-Private Function ElementsToShapes _
-                                 (ByVal ComposerElements As Collection) As ShapeRange
+Private Function ElementsToShapes( _
+                     ByVal ComposerElements As Collection _
+                 ) As ShapeRange
     Dim Item As ComposerElement
     Set ElementsToShapes = New ShapeRange
     For Each Item In ComposerElements
         ElementsToShapes.AddRange Item.Shapes
     Next Item
 End Function
+
+Private Sub LocalizedStringsInit()
+    With StringLocalizer.Builder(cdrEnglishUS, New LocalizedStringsEN)
+        .WithLocale cdrRussian, New LocalizedStringsRU
+        .WithLocale cdrBrazilianPortuguese, New LocalizedStringsBR
+        .WithLocale cdrSpanish, New LocalizedStringsES
+        Set LocalizedStrings = .Build
+    End With
+End Sub
 
 '===============================================================================
 ' тесты
@@ -223,15 +265,15 @@ Private Sub testComposer()
     ActiveDocument.BeginCommandGroup "test"
     ActiveDocument.Unit = cdrMillimeter
     With Composer.CreateAndCompose( _
-                                    Elements:=ShapesToElements(ActivePage.Shapes.All), _
-                                    StartingPoint:=FreePoint.Create(0, 297), _
-                                    MaxPlacesInWidth:=3, _
-                                    MaxPlacesInHeight:=4, _
-                                    MaxWidth:=0, _
-                                    MaxHeight:=297, _
-                                    HorizontalSpace:=0, _
-                                    VerticalSpace:=0 _
-                                )
+                      Elements:=ShapesToElements(ActivePage.Shapes.All), _
+                      StartingPoint:=FreePoint.Create(0, 297), _
+                      MaxPlacesInWidth:=3, _
+                      MaxPlacesInHeight:=4, _
+                      MaxWidth:=0, _
+                      MaxHeight:=297, _
+                      HorizontalSpace:=0, _
+                      VerticalSpace:=0 _
+                  )
         ElementsToShapes(.RemainingElements).ApplyNoFill
     End With
     ActiveDocument.EndCommandGroup

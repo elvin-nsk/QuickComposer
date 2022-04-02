@@ -31,16 +31,45 @@ Public VerticalSpace As TextBoxHandler
 '===============================================================================
 
 Private Sub UserForm_Initialize()
+
     Caption = APP_NAME
     Logo.ControlTipText = APP_URL
+    
+    frForm.Caption = LocalizedStrings("MainView.frForm")
+    obByCount.Caption = LocalizedStrings("MainView.obByCount")
+    lbColumns.Caption = LocalizedStrings("MainView.lbColumns")
+    lbRows.Caption = LocalizedStrings("MainView.lbRows")
+    opByArea.Caption = LocalizedStrings("MainView.opByArea")
+    lbWidth.Caption = LocalizedStrings("MainView.lbWidth")
+    lbHeight.Caption = LocalizedStrings("MainView.lbHeight")
+    opByPage.Caption = LocalizedStrings("MainView.opByPage")
+    frCompose.Caption = LocalizedStrings("MainView.frCompose")
+    opOnePage.Caption = LocalizedStrings("MainView.opOnePage")
+    opMultiplePages.Caption = LocalizedStrings("MainView.opMultiplePages")
+    frSpaces.Caption = LocalizedStrings("MainView.frSpaces")
+    lbHorizontalSpace.Caption = LocalizedStrings("MainView.lbHorizontalSpace")
+    lbVerticalSpace.Caption = LocalizedStrings("MainView.lbVerticalSpace")
+    cbNewDocument.Caption = LocalizedStrings("MainView.cbNewDocument")
+    cbGroup.Caption = LocalizedStrings("MainView.cbGroup")
+    btnOk.Caption = LocalizedStrings("MainView.btnOk")
+    
     Set Columns = TextBoxHandler.Create(tbColumns, TextBoxTypeLong)
     Set Rows = TextBoxHandler.Create(tbRows, TextBoxTypeLong)
     Set Width = TextBoxHandler.Create(tbWidth, TextBoxTypeDouble, 0, MaxSize)
     Set Height = TextBoxHandler.Create(tbHeight, TextBoxTypeDouble, 0, MaxSize)
     Set HorizontalSpace = _
-        TextBoxHandler.Create(tbHorizontalSpace, TextBoxTypeDouble, -MaxSize, MaxSize)
+        TextBoxHandler.Create( _
+            tbHorizontalSpace, _
+            TextBoxTypeDouble, _
+            -MaxSize, MaxSize _
+        )
     Set VerticalSpace = _
-        TextBoxHandler.Create(tbVerticalSpace, TextBoxTypeDouble, -MaxSize, MaxSize)
+        TextBoxHandler.Create( _
+            tbVerticalSpace, _
+            TextBoxTypeDouble, _
+            -MaxSize, MaxSize _
+        )
+
 End Sub
 
 Private Sub UserForm_Activate()

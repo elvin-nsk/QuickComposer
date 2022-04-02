@@ -113,8 +113,10 @@ Public Function FileExists(ByVal File As String) As Boolean
     FileExists = VBA.Len(VBA.Dir(File)) > 0
 End Function
 
-Public Sub SaveStrToFile(ByVal Content As String, _
-                                                 ByVal File As String)
+Public Sub SaveStrToFile( _
+               ByVal Content As String, _
+               ByVal File As String _
+           )
     Dim FileNum As Long
     FileNum = VBA.FreeFile
     Open File For Output Access Write As #FileNum

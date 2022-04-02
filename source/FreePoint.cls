@@ -54,12 +54,17 @@ Private Sub IPoint_Move(ByVal DeltaX As Double, ByVal DeltaY As Double)
     End With
 End Sub
 
-Private Sub IPoint_RotateAroundPoint(ByVal RotationCenter As IPoint, ByVal Angle As Double)
+Private Sub IPoint_RotateAroundPoint( _
+                ByVal RotationCenter As IPoint, _
+                ByVal Angle As Double _
+            )
     With RotationCenter
-        This.X = (This.X - .X) * VBA.Cos(DegToRad(Angle)) - _
-                         (This.Y - .Y) * VBA.Sin(DegToRad(Angle)) + .X
-        This.Y = (This.X - .X) * VBA.Sin(DegToRad(Angle)) + _
-                         (This.Y - .Y) * VBA.Cos(DegToRad(Angle)) + .Y
+        This.X = (This.X - .X) * VBA.Cos(DegToRad(Angle)) _
+               - (This.Y - .Y) * VBA.Sin(DegToRad(Angle)) _
+               + .X
+        This.Y = (This.X - .X) * VBA.Sin(DegToRad(Angle)) _
+               + (This.Y - .Y) * VBA.Cos(DegToRad(Angle)) _
+               + .Y
     End With
 End Sub
 

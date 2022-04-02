@@ -22,16 +22,16 @@ Private This As typeThis
 '===============================================================================
 
 Public Function Create( _
-                                    ByVal ShapeOrRange As Object _
-                                ) As ComposerElement
+                    ByVal ShapeOrRange As Object _
+                ) As ComposerElement
     With New ComposerElement
         Set Create = .Init(ShapeOrRange)
     End With
 End Function
 
 Friend Function Init( _
-                                    ByVal ShapeOrRange As Object _
-                                ) As ComposerElement
+                    ByVal ShapeOrRange As Object _
+                ) As ComposerElement
     With This
         If TypeOf ShapeOrRange Is Shape Then
             Set .Shapes = New ShapeRange
@@ -41,7 +41,7 @@ Friend Function Init( _
             Set .Shapes = ShapeOrRange
         Else
             VBA.Err.Raise 13, Source:="ComposerElement", _
-                                        Description:="Type mismatch: ShapeOrRange должен быть Shape или ShapeRange"
+                          Description:="Type mismatch: ShapeOrRange должен быть Shape или ShapeRange"
         End If
     End With
     Set Init = Me

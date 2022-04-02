@@ -150,7 +150,7 @@ Public Function MoveToLayer(ByVal ShapeOrRange As Object, ByVal Layer As Layer)
     Dim tSrcLayer() As Layer
     Dim tProps() As typeLayerProps
     Dim tLayersCol As Collection
-    Dim i&
+    Dim Index&
     
     If TypeOf ShapeOrRange Is Shape Then
     
@@ -172,14 +172,14 @@ Public Function MoveToLayer(ByVal ShapeOrRange As Object, ByVal Layer As Layer)
     
     ReDim tSrcLayer(1 To tLayersCol.Count)
     ReDim tProps(1 To tLayersCol.Count)
-    For i = 1 To tLayersCol.Count
-        Set tSrcLayer(i) = tLayersCol(i)
-        LayerPropsPreserveAndReset tSrcLayer(i), tProps(i)
-    Next i
+    For Index = 1 To tLayersCol.Count
+        Set tSrcLayer(Index) = tLayersCol(Index)
+        LayerPropsPreserveAndReset tSrcLayer(Index), tProps(Index)
+    Next Index
     ShapeOrRange.MoveToLayer Layer
-    For i = 1 To tLayersCol.Count
-        LayerPropsRestore tSrcLayer(i), tProps(i)
-    Next i
+    For Index = 1 To tLayersCol.Count
+        LayerPropsRestore tSrcLayer(Index), tProps(Index)
+    Next Index
 
 End Function
 
@@ -205,8 +205,8 @@ Public Function DuplicateActivePage( _
     Dim tRange As ShapeRange
     Dim tShape As Shape, sDuplicate As Shape
     Dim tProps As typeLayerProps
-    Dim i&
-    For i = 1 To NumberOfPages
+    Dim Index&
+    For Index = 1 To NumberOfPages
         Set tRange = FindShapesActivePageLayers
         Set DuplicateActivePage = _
             ActiveDocument.InsertPages(1, False, ActivePage.Index)
@@ -221,7 +221,7 @@ Public Function DuplicateActivePage( _
                 LayerPropsRestore tShape.Layer, tProps
             End If
         Next tShape
-    Next i
+    Next Index
 End Function
 
 'перекрашивает объект в чёрный или белый в серой шкале,
@@ -1047,24 +1047,24 @@ End Function
 
 Public Function FindMaxItemNum(ByRef Collection As Collection) As Long
     FindMaxItemNum = 1
-    Dim i As Long
-    For i = 1 To Collection.Count
-        If VBA.IsNumeric(Collection(i)) Then
-            If Collection(i) > Collection(FindMaxItemNum) Then _
-                FindMaxItemNum = i
+    Dim Index As Long
+    For Index = 1 To Collection.Count
+        If VBA.IsNumeric(Collection(Index)) Then
+            If Collection(Index) > Collection(FindMaxItemNum) Then _
+                FindMaxItemNum = Index
         End If
-    Next i
+    Next Index
 End Function
 
 Public Function FindMinItemNum(ByRef Collection As Collection) As Long
     FindMinItemNum = 1
-    Dim i As Long
-    For i = 1 To Collection.Count
-        If VBA.IsNumeric(Collection(i)) Then
-            If Collection(i) < Collection(FindMinItemNum) Then _
-                FindMinItemNum = i
+    Dim Index As Long
+    For Index = 1 To Collection.Count
+        If VBA.IsNumeric(Collection(Index)) Then
+            If Collection(Index) < Collection(FindMinItemNum) Then _
+                FindMinItemNum = Index
         End If
-    Next i
+    Next Index
 End Function
 
 Public Function MinOfTwo( _
@@ -1097,13 +1097,13 @@ Public Function IsStrInArr( _
                     ByVal StringToBeFound As String, _
                     Arr As Variant _
                 ) As Boolean
-        Dim i As Long
-        For i = LBound(Arr) To UBound(Arr)
-                If Arr(i) = StringToBeFound Then
+        Dim Index As Long
+        For Index = LBound(Arr) To UBound(Arr)
+                If Arr(Index) = StringToBeFound Then
                         IsStrInArr = True
                         Exit Function
                 End If
-        Next i
+        Next Index
         IsStrInArr = False
 End Function
 
@@ -1125,13 +1125,13 @@ Public Sub RemoveElementFromCollection( _
                ByVal Collection As Collection _
            )
     If Collection.Count = 0 Then Exit Sub
-    Dim i As Long
-    For i = 1 To Collection.Count
-        If IsSame(Element, Collection(i)) Then
-            Collection.Remove i
+    Dim Index As Long
+    For Index = 1 To Collection.Count
+        If IsSame(Element, Collection(Index)) Then
+            Collection.Remove Index
             Exit Sub
         End If
-    Next i
+    Next Index
 End Sub
 
 'случайное целое от LowerBound до UpperBound

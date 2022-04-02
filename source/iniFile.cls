@@ -8,20 +8,20 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 '===============================================================================
-' Класс:                         iniFile
-' Версия:                        2021.07.09
-' Автор:                         elvin-nsk (me@elvin.nsk.ru)
-' Использован код:     Scott Lyerly (scott_lyerly@tjx.com, or scott.c.lyerly@gmail.com)
-'                                        Daniel Pineault (http://www.cardaconsultants.com)
-' Назначение:                чтение/запись ini-файлов
-' Использование:         1) Пакетный способ
-'                                        задаём переменные File, Action, Section
-'                                        используем универсальную функцию
-'                                        чтения в переменную / записи из переменной в файл
-'                                        / сброса в значение по умолчанию:
-'                                        KeyVar(key$, Value As Variant, Optional ByVal Default As Variant)
+'   Класс:                    iniFile
+'   Версия:                   2022.03.27
+'   Автор:                    elvin-nsk (me@elvin.nsk.ru)
+'   Использован код:          Scott Lyerly (scott_lyerly@tjx.com, or scott.c.lyerly@gmail.com)
+'                             Daniel Pineault (http://www.cardaconsultants.com)
+'   Назначение:               чтение/запись ini-файлов
+'   Использование:            1) Пакетный способ
+'                                задаём переменные File, Action, Section
+'                                используем универсальную функцию
+'                                чтения в переменную / записи из переменной в файл
+'                                / сброса в значение по умолчанию:
+'                                KeyVar(key$, Value As Variant, Optional ByVal Default As Variant)
 '
-' Зависимости:             самодостаточный
+'   Зависимости:              самодостаточный
 '===============================================================================
 
 '@PredeclaredID
@@ -37,35 +37,43 @@ Option Explicit
 #If VBA7 Then
 'Declare for reading INI files (64 bit)
 Private Declare PtrSafe Function GetPrivateProfileString Lib "kernel32" _
-    Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                                        ByVal lpKeyName As Any, _
-                                                                        ByVal lpDefault As String, _
-                                                                        ByVal lpReturnedString As String, _
-                                                                        ByVal nSize As Long, _
-                                                                        ByVal lpFileName As String) As Long
+    Alias "GetPrivateProfileStringA" ( _
+              ByVal lpApplicationName As String, _
+              ByVal lpKeyName As Any, _
+              ByVal lpDefault As String, _
+              ByVal lpReturnedString As String, _
+              ByVal nSize As Long, _
+              ByVal lpFileName As String _
+          ) As Long
                                                                             
 'Declare for writing INI files (64 bit)
 Private Declare PtrSafe Function WritePrivateProfileString Lib "kernel32" _
-    Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                                            ByVal lpKeyName As Any, _
-                                                                            ByVal lpString As Any, _
-                                                                            ByVal lpFileName As String) As Long
+    Alias "WritePrivateProfileStringA" ( _
+              ByVal lpApplicationName As String, _
+              ByVal lpKeyName As Any, _
+              ByVal lpString As Any, _
+              ByVal lpFileName As String _
+          ) As Long
 #Else
 'Declare for reading INI files (32 bit)
 Private Declare Function GetPrivateProfileString Lib "kernel32" _
-    Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                                        ByVal lpKeyName As Any, _
-                                                                        ByVal lpDefault As String, _
-                                                                        ByVal lpReturnedString As String, _
-                                                                        ByVal nSize As Long, _
-                                                                        ByVal lpFileName As String) As Long
+    Alias "GetPrivateProfileStringA" ( _
+              ByVal lpApplicationName As String, _
+              ByVal lpKeyName As Any, _
+              ByVal lpDefault As String, _
+              ByVal lpReturnedString As String, _
+              ByVal nSize As Long, _
+              ByVal lpFileName As String _
+          ) As Long
                                                                             
 'Declare for writing INI files (32 bit)
 Private Declare Function WritePrivateProfileString Lib "kernel32" _
-    Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                                            ByVal lpKeyName As Any, _
-                                                                            ByVal lpString As Any, _
-                                                                            ByVal lpFileName As String) As Long
+    Alias "WritePrivateProfileStringA" ( _
+              ByVal lpApplicationName As String, _
+              ByVal lpKeyName As Any, _
+              ByVal lpString As Any, _
+              ByVal lpFileName As String _
+          ) As Long
 #End If
 
 '===============================================================================
@@ -143,9 +151,13 @@ Property Get Error() As iniError
     VBA.Err = This.Error
 End Property
 
-Public Function KeyVar(ByVal Key$, ByRef Value As Variant, Optional ByVal DefaultValue As Variant) As Boolean
+Public Function KeyVar( _
+                    ByVal Key As String, _
+                    ByRef Value As Variant, _
+                    Optional ByVal DefaultValue As Variant _
+                ) As Boolean
     
-    Dim v$
+    Dim v As String
     
     KeyVar = False
     
@@ -181,16 +193,16 @@ Public Function KeyVar(ByVal Key$, ByRef Value As Variant, Optional ByVal Defaul
                 End Select
             End If
         Case iniWrite
-            If VarType(Value) = vbInteger Or _
-                                                    vbLong Or _
-                                                    vbSingle Or _
-                                                    vbDouble Or _
-                                                    vbCurrency Or _
-                                                    vbDate Or _
-                                                    vbBoolean Or _
-                                                    vbByte Or _
-                                                    vbString Or _
-                                                    vbVariant Then
+            If VarType(Value) = vbInteger _
+                             Or vbLong _
+                             Or vbSingle _
+                             Or vbDouble _
+                             Or vbCurrency _
+                             Or vbDate _
+                             Or vbBoolean _
+                             Or vbByte _
+                             Or vbString _
+                             Or vbVariant Then
                 v = CStr(Value)
                 KeyVar = Entry(iniWrite, This.Section, Key, v)
             End If
@@ -201,14 +213,15 @@ Public Function KeyVar(ByVal Key$, ByRef Value As Variant, Optional ByVal Defaul
     
 End Function
 
-Public Function Entry(ByVal Action As iniAction, _
-                                            ByVal Section As String, _
-                                            ByVal Key As String, _
-                                            ByRef Value As String, _
-                                            Optional ByVal Default As String = "" _
-                                            ) As Boolean
+Public Function Entry( _
+                    ByVal Action As iniAction, _
+                    ByVal Section As String, _
+                    ByVal Key As String, _
+                    ByRef Value As String, _
+                    Optional ByVal Default As String = "" _
+                ) As Boolean
         
-    Dim v$
+    Dim v As String
     
     Entry = False
     Select Case Action
@@ -243,39 +256,41 @@ End Property
 '-------------------------------------------------------------------------------
 
 '*******************************************************************************
-' Description:    This reads an INI file section/key combination and
-'                             returns the read value as a string.
+' Description:      This reads an INI file section/key combination and
+'                   returns the read value as a string.
 '
-' Author:             Scott Lyerly
-' Contact:            scott_lyerly@tjx.com, or scott.c.lyerly@gmail.com
+' Author:           Scott Lyerly
+' Contact:          scott_lyerly@tjx.com, or scott.c.lyerly@gmail.com
 '
-' Notes:                Requires "Private Declare Function GetPrivateProfileString" and
-'                             "WritePrivateProfileString" to be added in the declarations
-'                             at the top of the module.
+' Notes:            Requires "Private Declare Function GetPrivateProfileString" and
+'                   "WritePrivateProfileString" to be added in the declarations
+'                   at the top of the module.
 '
-' Name:                                 Date:                     Init:     Modification:
-' sManageSectionEntry     26-Nov-2013         SCL         Original development
+' Name:                       Date:               Init:          Modification:
+' sManageSectionEntry     26-Nov-2013             SCL            Original development
 '
 ' Arguments:        inAction        The action to take in teh funciton, reading or writing to
-'                                                     to the INI file. Uses the enumeration iniAction in the
-'                                                     declarations section.
-'                             sSection        The seciton of the INI file to search
-'                             sKey                The key of the INI from which to retrieve a value
-'                             sIniFile        The name and directory location of the INI file
-'                             sValue            The value to be written to the INI file (if writing - optional)
+'                                   to the INI file. Uses the enumeration iniAction in the
+'                                   declarations section.
+'                   sSection        The seciton of the INI file to search
+'                   sKey            The key of the INI from which to retrieve a value
+'                   sIniFile        The name and directory location of the INI file
+'                   sValue          The value to be written to the INI file (if writing - optional)
 '
-' Returns:            string            The return string is one of three things:
-'                                                     1) The value being sought from the INI file.
-'                                                     2) The value being written to the INI file (should match
-'                                                            the sValue parameter).
-'                                                     3) The word "Error". This can be changed to whatever makes
-'                                                            the most sense to the programmer using it.
+' Returns:          string          The return string is one of three things:
+'                                   1) The value being sought from the INI file.
+'                                   2) The value being written to the INI file (should match
+'                                      the sValue parameter).
+'                                   3) The word "Error". This can be changed to whatever makes
+'                                      the most sense to the programmer using it.
 '*******************************************************************************
-Private Function sManageSectionEntry(inAction As iniAction, _
-                                                                         sSection As String, _
-                                                                         sKey As String, _
-                                                                         sIniFile As String, _
-                                                                         Optional sValue As String) As String
+Private Function sManageSectionEntry( _
+                     inAction As iniAction, _
+                     sSection As String, _
+                     sKey As String, _
+                     sIniFile As String, _
+                     Optional sValue As String _
+                 ) As String
 
     On Error GoTo Err_ManageSectionEntry
 
@@ -298,12 +313,14 @@ Private Function sManageSectionEntry(inAction As iniAction, _
         iLenBuf = Len(sRetBuf)
 
         ' Read the INI Section/Key value into the return variable.
-        sReturnValue = GetPrivateProfileString(sSection, _
-                                                                                     sKey, _
-                                                                                     "", _
-                                                                                     sRetBuf, _
-                                                                                     iLenBuf, _
-                                                                                     sIniFile)
+        sReturnValue = GetPrivateProfileString( _
+                           sSection, _
+                           sKey, _
+                           "", _
+                           sRetBuf, _
+                           iLenBuf, _
+                           sIniFile _
+                       )
 
         ' Trim the excess garbage that comes through with the variable.
         sReturnValue = Trim(Left(sRetBuf, sReturnValue))
@@ -325,10 +342,12 @@ Private Function sManageSectionEntry(inAction As iniAction, _
                         
             ' Write to the INI file and capture the value returned
             ' in the API function.
-            lRetVal = WritePrivateProfileString(sSection, _
-                                                                                    sKey, _
-                                                                                    sValue, _
-                                                                                    sIniFile)
+            lRetVal = WritePrivateProfileString( _
+                          sSection, _
+                          sKey, _
+                          sValue, _
+                          sIniFile _
+                      )
 
             ' Check to see if we had an error wrting to the INI file.
             If lRetVal = 0 Then sManageSectionEntry = ""

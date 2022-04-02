@@ -34,33 +34,35 @@ Private This As typeThis
 '===============================================================================
 
 Public Function CreateAndCompose( _
-                                    ByVal Elements As Collection, _
-                                    Optional ByVal StartingPoint As IPoint, _
-                                    Optional ByVal MaxPlacesInWidth As Long, _
-                                    Optional ByVal MaxPlacesInHeight As Long, _
-                                    Optional ByVal MaxWidth As Double, _
-                                    Optional ByVal MaxHeight As Double, _
-                                    Optional ByVal HorizontalSpace As Double, _
-                                    Optional ByVal VerticalSpace As Double _
-                                ) As Composer
+                    ByVal Elements As Collection, _
+                    Optional ByVal StartingPoint As IPoint, _
+                    Optional ByVal MaxPlacesInWidth As Long, _
+                    Optional ByVal MaxPlacesInHeight As Long, _
+                    Optional ByVal MaxWidth As Double, _
+                    Optional ByVal MaxHeight As Double, _
+                    Optional ByVal HorizontalSpace As Double, _
+                    Optional ByVal VerticalSpace As Double _
+                ) As Composer
     With New Composer
-        Set CreateAndCompose = .Init(Elements, StartingPoint, _
-                                                                 MaxPlacesInWidth, MaxPlacesInHeight, _
-                                                                 MaxWidth, MaxHeight, _
-                                                                 HorizontalSpace, VerticalSpace)
+        Set CreateAndCompose = .Init( _
+                                   Elements, StartingPoint, _
+                                   MaxPlacesInWidth, MaxPlacesInHeight, _
+                                   MaxWidth, MaxHeight, _
+                                   HorizontalSpace, VerticalSpace _
+                               )
     End With
 End Function
 
 Friend Function Init( _
-                                    ByVal Elements As Collection, _
-                                    ByVal StartingPoint As IPoint, _
-                                    ByVal MaxPlacesInWidth As Long, _
-                                    ByVal MaxPlacesInHeight As Long, _
-                                    ByVal MaxWidth As Double, _
-                                    ByVal MaxHeight As Double, _
-                                    ByVal HorizontalSpace As Double, _
-                                    ByVal VerticalSpace As Double _
-                                ) As Composer
+                    ByVal Elements As Collection, _
+                    ByVal StartingPoint As IPoint, _
+                    ByVal MaxPlacesInWidth As Long, _
+                    ByVal MaxPlacesInHeight As Long, _
+                    ByVal MaxWidth As Double, _
+                    ByVal MaxHeight As Double, _
+                    ByVal HorizontalSpace As Double, _
+                    ByVal VerticalSpace As Double _
+                ) As Composer
     With This
         Set .Elements = Elements
         Set .ComposedElements = New Collection
@@ -134,16 +136,16 @@ End Sub
 
 Private Function IsHeightExceeded(ByVal Item As ComposerElement) As Boolean
     With This
-        If (VBA.Abs(.StartingPoint.Y - .Cursor.Y) + Item.Height >= .MaxHeight) Or _
-             (.CurrentRowNumber > .MaxPlacesInHeight) Then _
+        If (VBA.Abs(.StartingPoint.Y - .Cursor.Y) + Item.Height >= .MaxHeight) _
+        Or (.CurrentRowNumber > .MaxPlacesInHeight) Then _
             IsHeightExceeded = True
     End With
 End Function
 
 Private Sub BeginNextRowIfNeeded(ByVal Item As ComposerElement)
     With This
-        If (.CurrentRowWidth + Item.Width > .MaxWidth) Or _
-             (.CurrentRowItemsInWidth = .MaxPlacesInWidth) Then
+        If (.CurrentRowWidth + Item.Width > .MaxWidth) _
+        Or (.CurrentRowItemsInWidth = .MaxPlacesInWidth) Then
             .Cursor.X = .StartingPoint.X
             .Cursor.Y = .Cursor.Y - .CurrentRowHeight - .VerticalSpace
             .CurrentRowWidth = 0
