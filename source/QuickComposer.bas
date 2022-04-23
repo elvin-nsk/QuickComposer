@@ -1,7 +1,7 @@
 Attribute VB_Name = "QuickComposer"
 '===============================================================================
 '   Макрос          : QuickComposer
-'   Версия          : 2022.04.02
+'   Версия          : 2022.04.23
 '   Сайты           : https://vk.com/elvin_macro/QuickComposer
 '                     https://github.com/elvin-nsk
 '   Автор           : elvin-nsk (me@elvin.nsk.ru)
@@ -46,7 +46,7 @@ Sub Start()
     End If
     
     lib_elvin.BoostStart APP_NAME, RELEASE
-    Compose ActivePage.Shapes.All, ActivePage, ActiveDocument, Cfg
+    Compose lib_elvin.FindShapesActivePageLayers, ActivePage, ActiveDocument, Cfg
     ActiveDocument.Pages.First.Activate
     
 Finally:
